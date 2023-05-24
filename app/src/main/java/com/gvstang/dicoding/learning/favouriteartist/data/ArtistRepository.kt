@@ -7,7 +7,6 @@ import kotlinx.coroutines.flow.flowOf
 
 class ArtistRepository {
 
-    private val favouriteArtists = mutableListOf<Artist>()
     private val listArtists = mutableListOf<Artist>()
 
     init {
@@ -16,6 +15,7 @@ class ArtistRepository {
                 listArtists.add(it)
             }
         }
+        listArtists.shuffle()
     }
 
     fun getAllArtists(): Flow<List<Artist>> = flowOf(listArtists)
@@ -24,6 +24,23 @@ class ArtistRepository {
         listArtists.filter {
             it.name.contains(query, ignoreCase = true)
         }
+
+    fun getArtistByName(name: String): Artist =
+        listArtists.first {
+            it.name == name
+        }
+
+    fun setFavourite(name: String, favorited: Boolean): Artist {
+        val index = listArtists.indexOfFirst { it.name == name }
+        if(index >= 0) {
+            val newArtist = getArtistByName(name).copy(favorited = favorited)
+            listArtists[index] = newArtist
+            return newArtist
+        }
+        return getArtistByName(name)
+    }
+
+    fun getFavouritedArtists(): List<Artist> = listArtists.filter { it.favorited }
 
     companion object {
         @Volatile

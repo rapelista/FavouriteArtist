@@ -1,6 +1,10 @@
 <resources>
     <string name="app_name">FavouriteArtist</string>
     <string name="search_artist">Cari artist favoritmu</string>
-    <string name="error_empty">Tidak ada artis favorit</string>
+    <string name="error_empty">Artis sedang tidak tersedia</string>
     <string name="error_not_found">Artis tidak ditemukan</string>
+    <string name="about_name">Farih Akmal Haqiqi</string>
+    <string name="about_email">farih.282828@gmail.com</string>
+    <string name="error_zero_fav">Belum ada artis favorit</string>
+    <string name="my_fav">Favourite Saya</string>
 </resources>

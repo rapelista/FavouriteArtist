@@ -1,18 +1,18 @@
-package com.gvstang.dicoding.learning.favouriteartist.ui.screen.home
+package com.gvstang.dicoding.learning.favouriteartist.ui.screen.favourite
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
@@ -27,54 +27,38 @@ import com.gvstang.dicoding.learning.favouriteartist.model.FakeArtistDataSource
 import com.gvstang.dicoding.learning.favouriteartist.ui.ViewModelFactory
 import com.gvstang.dicoding.learning.favouriteartist.ui.common.UiState
 import com.gvstang.dicoding.learning.favouriteartist.ui.component.ArtistItem
-import com.gvstang.dicoding.learning.favouriteartist.ui.component.SearchBar
 import com.gvstang.dicoding.learning.favouriteartist.ui.theme.FavouriteArtistTheme
 
 @Composable
-fun HomeScreen(
+fun FavouriteScreen(
     navigateToDetail: (String) -> Unit,
     modifier: Modifier = Modifier,
-    viewModel: HomeViewModel = viewModel(
+    viewModel: FavouriteViewModel = viewModel(
         factory = ViewModelFactory(Injection.provideRepository())
     )
 ) {
-    val query by viewModel.query
-
-    viewModel.uiState.collectAsState(initial = UiState.Loading).value.let { uiState ->
+    viewModel.uiState.collectAsState(initial = UiState.Loading).value.let {uiState ->
         when(uiState) {
             is UiState.Loading -> {
-                viewModel.getAllArtists()
+                viewModel.getFavouritedArtists()
             }
             is UiState.Success -> {
-                HomeContent(
-                    listArtists = uiState.data,
-                    query = query,
-                    onQueryChanged = viewModel::search,
-                    navigateToDetail = navigateToDetail,
+                FavouriteContent(
+                    favouriteArtists = uiState.data,
                     modifier = modifier,
+                    navigateToDetail = navigateToDetail
                 )
             }
-            is UiState.Error -> {
-                Text(
-                    text = stringResource(id = R.string.error_empty),
-                    textAlign = TextAlign.Center,
-                    color = Color.White,
-                    modifier = modifier
-                        .fillMaxWidth()
-                        .padding(16.dp)
-                )
-            }
+            is UiState.Error -> {}
         }
     }
 }
 
 @Composable
-fun HomeContent(
-    listArtists: List<Artist>,
-    query: String,
-    onQueryChanged: (String) -> Unit,
+fun FavouriteContent(
+    favouriteArtists: List<Artist>,
     navigateToDetail: (String) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier
 ) {
     LazyVerticalGrid(
         columns = GridCells.Adaptive(160.dp),
@@ -87,13 +71,16 @@ fun HomeContent(
                 GridItemSpan(2)
             }
         ) {
-            SearchBar(
-                query = query,
-                onQueryChanged = onQueryChanged
+            Text(
+                text = stringResource(id = R.string.my_fav),
+                color = Color.White,
+                style = MaterialTheme.typography.headlineLarge
             )
+
+            Spacer(modifier = Modifier.height(8.dp))
         }
-        if(listArtists.isNotEmpty()) {
-            items(listArtists) { artist ->
+        if(favouriteArtists.isNotEmpty()) {
+            items(favouriteArtists) { artist ->
                 ArtistItem(
                     image = artist.image,
                     name = artist.name,
@@ -109,7 +96,7 @@ fun HomeContent(
                 }
             ) {
                 Text(
-                    text = stringResource(id = R.string.error_not_found),
+                    text = stringResource(id = R.string.error_zero_fav),
                     textAlign = TextAlign.Center
                 )
             }
@@ -119,12 +106,11 @@ fun HomeContent(
 
 @Preview
 @Composable
-fun HomeContentPreview() {
+fun FavouriteContentPreview() {
     FavouriteArtistTheme {
-        HomeContent(
-            listArtists = FakeArtistDataSource.dummyArtist,
-            query = "",
-            onQueryChanged = {},
+        FavouriteContent(
+            favouriteArtists = FakeArtistDataSource.dummyArtist,
+            modifier = Modifier,
             navigateToDetail = {}
         )
     }
