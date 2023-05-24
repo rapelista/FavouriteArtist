@@ -128,7 +128,7 @@ fun BottomBar(
             NavigationBarItem(
                 icon = {
                     Icon(
-                        imageVector = item.icon, contentDescription = item.title)
+                        imageVector = item.icon, contentDescription = if(item.screen == Screen.About) "about_page" else item.title)
                 },
                 label = {
                     Text(
